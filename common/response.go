@@ -1,13 +1,11 @@
 package common
 
 type MovieResponse struct {
-	Message string `json:"message"`
-	Movie   Movie  `json:"movie"`
+	Movie Movie `json:"movie"`
 }
 
 type MoviesResponse struct {
-	Message string  `json:"message"`
-	Movies  []Movie `json:"movies"`
+	Movies []Movie `json:"movies"`
 }
 
 type ErrorResponse struct {

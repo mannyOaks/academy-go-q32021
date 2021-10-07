@@ -1,0 +1,17 @@
+settings:
+  legacy:
+    force: false
+    interval: 0s
+schema:
+- name: academy-go-q32021
+  path: .
+  commands: {}
+  watcher:
+    extensions:
+    - go
+    paths:
+    - /
+    ignored_paths:
+    - .git
+    - .realize
+    - vendor

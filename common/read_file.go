@@ -17,7 +17,7 @@ func ReadCsvFile(filename string) ([][]string, error) {
 }
 
 func WriteToCsv(filename string, data [][]string) {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, os.ModeAppend)
 	if err != nil {
 		fmt.Println(err)
 	}

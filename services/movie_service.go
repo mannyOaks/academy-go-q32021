@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"mrobles_app/common"
 	"mrobles_app/infrastructure"
 )
@@ -18,8 +17,6 @@ func fetchMovies() ([]common.Movie, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(movies)
 
 	infrastructure.Save(movies)
 	return movies, nil

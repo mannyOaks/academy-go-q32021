@@ -10,18 +10,35 @@ const csvFilePath = "movies.csv"
 func parseCsv() ([]common.Movie, error) {
 	records, err := common.ReadCsvFile(csvFilePath)
 	if err != nil {
-		return make([]common.Movie, 0), err
+		return nil, err
 	}
 
 	slice := make([]common.Movie, len(records[0]))
 
 	for _, rec := range records {
-		id, _ := strconv.Atoi(rec[0])
+		id, err := strconv.Atoi(rec[0])
+		if err != nil {
+			return nil, err
+		}
+		pop, err := strconv.ParseFloat(rec[5], 64)
+		if err != nil {
+			return nil, err
+		}
+
+		adult, err := strconv.ParseBool(rec[7])
+		if err != nil {
+			return nil, err
+		}
 
 		game := common.Movie{
-			ID: id,
-			// Name:        rec[1],
-			ReleaseDate: rec[2],
+			ID:          id,
+			Title:       rec[1],
+			Overview:    rec[2],
+			Language:    rec[3],
+			Poster:      rec[4],
+			Popularity:  pop,
+			ReleaseDate: rec[6],
+			Adult:       adult,
 		}
 
 		slice = append(slice, game)

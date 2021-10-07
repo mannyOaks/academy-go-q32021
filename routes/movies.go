@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"encoding/json"
+	"net/http"
 	"strconv"
 
 	"mrobles_app/common"
@@ -19,8 +19,7 @@ func GetMovies(c echo.Context) error {
 	res := common.MoviesResponse{
 		Movies: movies,
 	}
-	data, _ := json.Marshal(res)
-	return c.JSON(200, data)
+	return c.JSON(http.StatusOK, res)
 }
 
 func GetMovie(c echo.Context) error {
@@ -37,6 +36,5 @@ func GetMovie(c echo.Context) error {
 	res := common.MovieResponse{
 		Movie: movie,
 	}
-	data, _ := json.Marshal(res)
-	return c.JSON(200, data)
+	return c.JSON(http.StatusOK, res)
 }
