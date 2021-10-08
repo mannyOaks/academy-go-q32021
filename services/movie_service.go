@@ -2,32 +2,52 @@ package services
 
 import (
 	"mrobles_app/common"
-	"mrobles_app/infrastructure"
+	"strconv"
 )
 
-const BASE_URL = "https://api.themoviedb.org/3/"
+type repository interface {
+	GetMovie(id string) (*common.Movie, error)
+}
 
-func fetchMovies() ([]common.Movie, error) {
-	res, err := infrastructure.NewClient().R().Get(BASE_URL + "/discover/movie")
+type MovieService struct {
+	repo repository
+}
+
+func NewMovieService(repo repository) MovieService {
+	return MovieService{repo: repo}
+}
+
+const csvFilePath = "movies.csv"
+
+// FindMovie - Returns and saves movie from api with the specified id
+func (ms MovieService) FindMovie(id string) (*common.Movie, error) {
+	movie, err := ms.repo.GetMovie(id)
 	if err != nil {
 		return nil, err
 	}
 
-	movies, err := common.JsonToMovies(res.Body())
-	if err != nil {
+	if err := saveToCsv(movie); err != nil {
 		return nil, err
 	}
-
-	infrastructure.Save(movies)
-	return movies, nil
+	return movie, nil
 }
 
-// FindMovies - Returns all the movie structs from the csv file and an error if one occurs
-func FindMovies() ([]common.Movie, error) {
-	return fetchMovies()
-}
+func saveToCsv(mov *common.Movie) error {
+	row := []string{
+		strconv.Itoa(mov.ID),
+		mov.Title,
+		mov.Overview,
+		mov.Language,
+		mov.Poster,
+		strconv.FormatFloat(mov.Popularity, 'E', -1, 64),
+		mov.ReleaseDate,
+		strconv.FormatBool(mov.Adult),
+	}
 
-// FindMovie - Returns a movie struct from the csv file with specified id, if not found returns default value struct, and an error if one occurs
-func FindMovie(id int) (common.Movie, error) {
-	return infrastructure.FindOne(id)
+	err := common.WriteToCsv(csvFilePath, row)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

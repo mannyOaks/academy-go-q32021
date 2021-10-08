@@ -2,7 +2,6 @@ package common
 
 import (
 	"encoding/csv"
-	"fmt"
 	"os"
 )
 
@@ -18,17 +17,18 @@ func ReadCsvFile(filename string) ([][]string, error) {
 }
 
 // WriteToCsv - Writes `data` to `filename`
-func WriteToCsv(filename string, data [][]string) {
-	// 0644, 066, 0755
+func WriteToCsv(filename string, data []string) error {
+	// perms that work => 0644, 066, 0755
 	file, err := os.OpenFile(filename, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0755)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
 
 	w := csv.NewWriter(file)
-	w.WriteAll(data)
-
-	if err := w.Error(); err != nil {
-		fmt.Println("Error", err)
+	err = w.WriteAll([][]string{data})
+	if err != nil {
+		return err
 	}
+
+	return nil
 }

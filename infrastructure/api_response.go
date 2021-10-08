@@ -1,13 +1,6 @@
-package common
+package infrastructure
 
-type apiDiscoverResponse struct {
-	Page         int         `json:"page"`
-	Results      []apiResult `json:"results"`
-	TotalPages   int         `json:"total_pages"`
-	TotalResults int         `json:"total_results"`
-}
-
-type apiResult struct {
+type apiMovieResponse struct {
 	ID               int     `json:"id"`
 	Adult            bool    `json:"adult"`
 	BackdropPath     string  `json:"backdrop_path"`

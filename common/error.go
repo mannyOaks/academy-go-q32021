@@ -1,7 +1,6 @@
 package common
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -9,24 +8,21 @@ import (
 )
 
 func BadRequestError(c echo.Context, message string) error {
-
 	res := ErrorResponse{
 		Message: message,
 		Error:   nil,
 	}
-	data, _ := json.Marshal(res)
-	return c.JSON(http.StatusBadRequest, data)
+	return c.JSON(http.StatusBadRequest, res)
 }
 
-func NotFoundError(c echo.Context, id int) error {
-	s := fmt.Sprintf("Movie %d not found", id)
+func NotFoundError(c echo.Context, id string) error {
+	s := fmt.Sprintf("Movie %s not found", id)
 
 	res := ErrorResponse{
 		Message: s,
 		Error:   nil,
 	}
-	data, _ := json.Marshal(res)
-	return c.JSON(http.StatusNotFound, data)
+	return c.JSON(http.StatusNotFound, res)
 }
 
 func InternalServerError(c echo.Context, err error) error {
@@ -34,6 +30,5 @@ func InternalServerError(c echo.Context, err error) error {
 		Message: "Something wrong in server",
 		Error:   err,
 	}
-	data, _ := json.Marshal(res)
-	return c.JSON(http.StatusInternalServerError, data)
+	return c.JSON(http.StatusInternalServerError, res)
 }
