@@ -6,7 +6,7 @@ import (
 )
 
 type repository interface {
-	GetMovie(id string) (*common.Movie, error)
+	GetMovie(id string) (common.Movie, error)
 }
 
 type MovieService struct {
@@ -20,19 +20,19 @@ func NewMovieService(repo repository) MovieService {
 const csvFilePath = "movies.csv"
 
 // FindMovie - Returns and saves movie from api with the specified id
-func (ms MovieService) FindMovie(id string) (*common.Movie, error) {
+func (ms MovieService) FindMovie(id string) (common.Movie, error) {
 	movie, err := ms.repo.GetMovie(id)
 	if err != nil {
-		return nil, err
+		return common.Movie{}, err
 	}
 
 	if err := saveToCsv(movie); err != nil {
-		return nil, err
+		return common.Movie{}, err
 	}
 	return movie, nil
 }
 
-func saveToCsv(mov *common.Movie) error {
+func saveToCsv(mov common.Movie) error {
 	row := []string{
 		strconv.Itoa(mov.ID),
 		mov.Title,

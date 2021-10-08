@@ -17,23 +17,23 @@ func newClient() *resty.Client {
 	return resty.New().SetAuthToken(omdbAuthToken)
 }
 
-func (mr MovieRepo) GetMovie(id string) (*common.Movie, error) {
+func (mr MovieRepo) GetMovie(id string) (common.Movie, error) {
 	res, err := newClient().R().Get(baseUrl + "/movie/" + id)
 	if err != nil {
-		return nil, err
+		return common.Movie{}, err
 	}
 
 	if res.IsError() {
-		return nil, errors.New("Empty data")
+		return common.Movie{}, errors.New("Empty data")
 	}
 	return parseJsonMovie(res.Body())
 }
 
-func parseJsonMovie(body []byte) (*common.Movie, error) {
+func parseJsonMovie(body []byte) (common.Movie, error) {
 	var data apiMovieResponse
 	err := json.Unmarshal(body, &data)
 	if err != nil {
-		return nil, err
+		return common.Movie{}, err
 	}
 
 	movie := common.Movie{
@@ -47,5 +47,5 @@ func parseJsonMovie(body []byte) (*common.Movie, error) {
 		Adult:       data.Adult,
 	}
 
-	return &movie, nil
+	return movie, nil
 }

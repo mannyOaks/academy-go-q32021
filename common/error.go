@@ -8,9 +8,8 @@ import (
 )
 
 func BadRequestError(c echo.Context, message string) error {
-	res := ErrorResponse{
+	res := errorResponse{
 		Message: message,
-		Error:   nil,
 	}
 	return c.JSON(http.StatusBadRequest, res)
 }
@@ -18,17 +17,15 @@ func BadRequestError(c echo.Context, message string) error {
 func NotFoundError(c echo.Context, id string) error {
 	s := fmt.Sprintf("Movie %s not found", id)
 
-	res := ErrorResponse{
+	res := errorResponse{
 		Message: s,
-		Error:   nil,
 	}
 	return c.JSON(http.StatusNotFound, res)
 }
 
 func InternalServerError(c echo.Context, err error) error {
-	res := ErrorResponse{
+	res := errorResponse{
 		Message: "Something wrong in server",
-		Error:   err,
 	}
 	return c.JSON(http.StatusInternalServerError, res)
 }

@@ -9,16 +9,16 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type filter interface {
-	FindMovie(id string) (*common.Movie, error)
+type service interface {
+	FindMovie(id string) (common.Movie, error)
 }
 
 type MovieHandler struct {
-	service filter
+	srv service
 }
 
-func NewMovieHandler(service filter) MovieHandler {
-	return MovieHandler{service: service}
+func NewMovieHandler(srv service) MovieHandler {
+	return MovieHandler{srv: srv}
 }
 
 func (mv MovieHandler) Controller(c echo.Context) error {
@@ -28,13 +28,17 @@ func (mv MovieHandler) Controller(c echo.Context) error {
 		return common.BadRequestError(c, "Param {id} must be numeric")
 	}
 
-	movie, err := mv.service.FindMovie(id)
+	movie, err := mv.srv.FindMovie(id)
 	if err != nil {
+		return common.InternalServerError(c, err)
+	}
+
+	if movie == (common.Movie{}) {
 		return common.NotFoundError(c, id)
 	}
 
 	res := common.MovieResponse{
-		Movie: *movie,
+		Movie: movie,
 	}
 	return c.JSON(http.StatusOK, res)
 }
