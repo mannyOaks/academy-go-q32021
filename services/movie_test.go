@@ -2,13 +2,14 @@ package services
 
 import (
 	"errors"
-	"mrobles_app/common"
 	"testing"
+
+	"github.com/mannyOaks/academy-go-q32021/entities"
 
 	"github.com/stretchr/testify/assert"
 )
 
-var movie = common.Movie{
+var movie = entities.Movie{
 	ID:          635302,
 	Title:       "Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train",
 	Overview:    "Tanjirō Kamado, joined with Inosuke Hashibira, a boy raised by boars who wears a boar's head, and Zenitsu Agatsuma, a scared boy who reveals his true power when he sleeps, boards the Infinity Train on a new mission with the Fire Hashira, Kyōjurō Rengoku, to defeat a demon who has been tormenting the people and killing the demon slayers who oppose it!",
@@ -22,7 +23,7 @@ var movie = common.Movie{
 func TestMovieService_FindMovie(t *testing.T) {
 	testCases := []struct {
 		name     string
-		response common.Movie
+		response entities.Movie
 		hasError bool
 		err      error
 		id       string
@@ -36,7 +37,7 @@ func TestMovieService_FindMovie(t *testing.T) {
 		},
 		{
 			name:     "movie not found",
-			response: common.Movie{},
+			response: entities.Movie{},
 			hasError: true,
 			err:      errors.New("Movie 1 not found"),
 			id:       "1",
@@ -45,7 +46,7 @@ func TestMovieService_FindMovie(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			mock := mockRepository{}
+			mock := mockMovieRepository{}
 			mock.On("GetMovie", tc.id).Return(tc.response, tc.err)
 			service := NewMovieService(&mock)
 

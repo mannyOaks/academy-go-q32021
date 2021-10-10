@@ -1,6 +1,7 @@
-package infrastructure
+package entities
 
-type apiMovieResponse struct {
+// An ApiMovieResponse represents the response the movie api returns
+type ApiMovieResponse struct {
 	ID               int     `json:"id"`
 	Adult            bool    `json:"adult"`
 	BackdropPath     string  `json:"backdrop_path"`

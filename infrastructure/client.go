@@ -3,7 +3,8 @@ package infrastructure
 import (
 	"encoding/json"
 	"errors"
-	"mrobles_app/common"
+
+	"github.com/mannyOaks/academy-go-q32021/entities"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -17,26 +18,26 @@ func newClient() *resty.Client {
 	return resty.New().SetAuthToken(omdbAuthToken)
 }
 
-func (mr MovieRepo) GetMovie(id string) (common.Movie, error) {
+func (mr MovieRepo) GetMovie(id string) (entities.Movie, error) {
 	res, err := newClient().R().Get(baseUrl + "/movie/" + id)
 	if err != nil {
-		return common.Movie{}, err
+		return entities.Movie{}, err
 	}
 
 	if res.IsError() {
-		return common.Movie{}, errors.New("Empty data")
+		return entities.Movie{}, errors.New("Empty data")
 	}
 	return parseJsonMovie(res.Body())
 }
 
-func parseJsonMovie(body []byte) (common.Movie, error) {
-	var data apiMovieResponse
+func parseJsonMovie(body []byte) (entities.Movie, error) {
+	var data entities.ApiMovieResponse
 	err := json.Unmarshal(body, &data)
 	if err != nil {
-		return common.Movie{}, err
+		return entities.Movie{}, err
 	}
 
-	movie := common.Movie{
+	movie := entities.Movie{
 		ID:          data.ID,
 		Title:       data.Title,
 		Overview:    data.Overview,

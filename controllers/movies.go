@@ -4,40 +4,44 @@ import (
 	"net/http"
 	"strconv"
 
-	"mrobles_app/common"
+	"github.com/mannyOaks/academy-go-q32021/common"
+	"github.com/mannyOaks/academy-go-q32021/entities"
 
 	"github.com/labstack/echo/v4"
 )
 
-type service interface {
-	FindMovie(id string) (common.Movie, error)
+type movieService interface {
+	FindMovie(id string) (entities.Movie, error)
 }
 
-type MovieHandler struct {
-	srv service
+// MovieController represents the controller the movie router uses
+type MovieController struct {
+	service movieService
 }
 
-func NewMovieHandler(srv service) MovieHandler {
-	return MovieHandler{srv: srv}
+// NewMovieController - receives a `movieService` and instantiates a Movie Controller
+func NewMovieController(srv movieService) MovieController {
+	return MovieController{service: srv}
 }
 
-func (mv MovieHandler) Controller(c echo.Context) error {
+// GetMovie - Returns a movie if found by the external API, also saves it in the csv file
+func (mv MovieController) GetMovie(c echo.Context) error {
 	id := c.Param("id")
 	_, err := strconv.Atoi(id)
 	if err != nil {
 		return common.BadRequestError(c, "Param {id} must be numeric")
 	}
 
-	movie, err := mv.srv.FindMovie(id)
+	movie, err := mv.service.FindMovie(id)
 	if err != nil {
 		return common.InternalServerError(c, err)
 	}
 
-	if movie == (common.Movie{}) {
+	if movie == (entities.Movie{}) {
 		return common.NotFoundError(c, id)
 	}
 
-	res := common.MovieResponse{
+	res := entities.GetMovieResponse{
 		Movie: movie,
 	}
 	return c.JSON(http.StatusOK, res)

@@ -17,9 +17,9 @@ func ReadCsvFile(filename string) ([][]string, error) {
 }
 
 // WriteToCsv - Writes `data` to `filename`
-func WriteToCsv(filename string, data []string) error {
+func WriteToCsv(data []string) error {
 	// perms that work => 0644, 066, 0755
-	file, err := os.OpenFile(filename, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0755)
+	file, err := os.OpenFile(os.Getenv("CSV_PATH"), os.O_CREATE|os.O_RDWR|os.O_APPEND, 0755)
 	if err != nil {
 		return err
 	}

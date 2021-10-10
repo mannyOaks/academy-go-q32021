@@ -1,9 +1,11 @@
 package app
 
 import (
-	"mrobles_app/controllers"
-	"mrobles_app/infrastructure"
-	"mrobles_app/services"
+	"os"
+
+	"github.com/mannyOaks/academy-go-q32021/controllers"
+	"github.com/mannyOaks/academy-go-q32021/infrastructure"
+	"github.com/mannyOaks/academy-go-q32021/services"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -18,12 +20,12 @@ func RunApp() {
 	}))
 
 	handleMovies(e)
-	e.Start(":5000")
+	e.Start(":" + os.Getenv("PORT"))
 }
 
 func handleMovies(e *echo.Echo) {
 	moviesService := services.NewMovieService(infrastructure.MovieRepo{})
-	moviesController := controllers.NewMovieHandler(moviesService)
+	moviesController := controllers.NewMovieController(moviesService)
 
-	e.GET("/movies/:id", moviesController.Controller)
+	e.GET("/movies/:id", moviesController.GetMovie)
 }

@@ -1,5 +1,6 @@
-package common
+package entities
 
+// A Movie represents a movie found from the external api
 type Movie struct {
 	ID          int     `json:"id"`
 	Title       string  `json:"title"`
