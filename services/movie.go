@@ -1,9 +1,10 @@
 package services
 
 import (
+	"encoding/csv"
+	"os"
 	"strconv"
 
-	"github.com/mannyOaks/academy-go-q32021/common"
 	"github.com/mannyOaks/academy-go-q32021/entities"
 )
 
@@ -18,7 +19,7 @@ type MovieService struct {
 
 // NewMovieService - receives a movieRepository and instantiates a movie service
 func NewMovieService(repo movieRepository) MovieService {
-	return MovieService{repo: repo}
+	return MovieService{repo}
 }
 
 // FindMovie - Returns and saves movie from api with the specified id
@@ -35,6 +36,14 @@ func (ms MovieService) FindMovie(id string) (entities.Movie, error) {
 }
 
 func saveToCsv(mov entities.Movie) error {
+	// perms that work => 0644, 066, 0755
+	file, err := os.OpenFile(os.Getenv("CSV_PATH"), os.O_CREATE|os.O_RDWR|os.O_APPEND, 0755)
+	if err != nil {
+		return err
+	}
+
+	w := csv.NewWriter(file)
+
 	row := []string{
 		strconv.Itoa(mov.ID),
 		mov.Title,
@@ -46,7 +55,7 @@ func saveToCsv(mov entities.Movie) error {
 		strconv.FormatBool(mov.Adult),
 	}
 
-	err := common.WriteToCsv(row)
+	err = w.WriteAll([][]string{row})
 	if err != nil {
 		return err
 	}

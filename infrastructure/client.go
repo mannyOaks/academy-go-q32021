@@ -11,6 +11,10 @@ import (
 
 type MovieRepo struct{}
 
+func NewMovieRepo() MovieRepo {
+	return MovieRepo{}
+}
+
 const baseUrl = "https://api.themoviedb.org/3"
 const omdbAuthToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhMGJkYWRhMmM5NTFhOTBiNmQxNjc4NjgyMTQ3NTRhMSIsInN1YiI6IjYxNWI5OTZjYzhhMmQ0MDAyYWMxMGM3YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.u9kwuL1lNbkvWKUhPqP6vVssioOMiv7a94Wa3cmOm4E"
 
@@ -25,7 +29,7 @@ func (mr MovieRepo) GetMovie(id string) (entities.Movie, error) {
 	}
 
 	if res.IsError() {
-		return entities.Movie{}, errors.New("Empty data")
+		return entities.Movie{}, errors.New("empty data")
 	}
 	return parseJsonMovie(res.Body())
 }

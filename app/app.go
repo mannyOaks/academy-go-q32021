@@ -24,8 +24,10 @@ func RunApp() {
 }
 
 func handleMovies(e *echo.Echo) {
-	moviesService := services.NewMovieService(infrastructure.MovieRepo{})
+	movieRepo := infrastructure.NewMovieRepo()
+	moviesService := services.NewMovieService(movieRepo)
 	moviesController := controllers.NewMovieController(moviesService)
 
+	e.GET("/movies", moviesController.GetMovies)
 	e.GET("/movies/:id", moviesController.GetMovie)
 }

@@ -12,20 +12,43 @@ type mockMovieService struct {
 	mock.Mock
 }
 
-// FindMovie provides a mock function with given fields: id
-func (_m *mockMovieService) FindMovie(id string) (entities.Movie, error) {
-	ret := _m.Called(id)
+// FindMovie provides a mock function with given fields: _a0
+func (_m *mockMovieService) FindMovie(_a0 string) (entities.Movie, error) {
+	ret := _m.Called(_a0)
 
 	var r0 entities.Movie
 	if rf, ok := ret.Get(0).(func(string) entities.Movie); ok {
-		r0 = rf(id)
+		r0 = rf(_a0)
 	} else {
 		r0 = ret.Get(0).(entities.Movie)
 	}
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(id)
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// FindMovies provides a mock function with given fields: _a0, _a1, _a2
+func (_m *mockMovieService) FindMovies(_a0 string, _a1 int, _a2 int) ([]entities.Movie, error) {
+	ret := _m.Called(_a0, _a1, _a2)
+
+	var r0 []entities.Movie
+	if rf, ok := ret.Get(0).(func(string, int, int) []entities.Movie); ok {
+		r0 = rf(_a0, _a1, _a2)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]entities.Movie)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, int, int) error); ok {
+		r1 = rf(_a0, _a1, _a2)
 	} else {
 		r1 = ret.Error(1)
 	}
