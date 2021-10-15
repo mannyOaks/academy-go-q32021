@@ -16,7 +16,6 @@ var (
 	movieJson         = "{\"movie\":{\"id\":635302,\"title\":\"Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train\",\"description\":\"Tanjirō Kamado, joined with Inosuke Hashibira, a boy raised by boars who wears a boar's head, and Zenitsu Agatsuma, a scared boy who reveals his true power when he sleeps, boards the Infinity Train on a new mission with the Fire Hashira, Kyōjurō Rengoku, to defeat a demon who has been tormenting the people and killing the demon slayers who oppose it!\",\"language\":\"ja\",\"release_date\":\"2020-10-16\",\"poster_path\":\"/h8Rb9gBr48ODIwYUttZNYeMWeUU.jpg\",\"popularity\":756.399,\"adult\":false}}\n"
 	notFoundJson      = "{\"message\":\"Movie %s not found\"}\n"
 	badRequestJson    = "{\"message\":\"Param {id} must be numeric\"}\n"
-	errorJson         = "{\"message\":\"Something wrong in server\"}\n"
 	routeNotFoundJson = "{\"message\":\"Not Found\"}\n"
 	movie             = entities.Movie{
 		ID:          635302,
