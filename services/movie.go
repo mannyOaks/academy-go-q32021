@@ -23,16 +23,16 @@ func NewMovieService(repo movieRepository) MovieService {
 }
 
 // FindMovie - Returns and saves movie from api with the specified id
-func (ms MovieService) FindMovie(id string) (entities.Movie, error) {
+func (ms MovieService) FindMovie(id string) (*entities.Movie, error) {
 	movie, err := ms.repo.GetMovie(id)
 	if err != nil {
-		return entities.Movie{}, err
+		return nil, err
 	}
 
 	if err := saveToCsv(movie); err != nil {
-		return entities.Movie{}, err
+		return nil, err
 	}
-	return movie, nil
+	return &movie, nil
 }
 
 func saveToCsv(mov entities.Movie) error {

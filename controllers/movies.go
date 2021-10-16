@@ -11,7 +11,7 @@ import (
 )
 
 type movieService interface {
-	FindMovie(string) (entities.Movie, error)
+	FindMovie(string) (*entities.Movie, error)
 	FindMovies(string, int, int) ([]entities.Movie, error)
 }
 
@@ -38,12 +38,12 @@ func (mv MovieController) GetMovie(c echo.Context) error {
 		return common.InternalServerError(c, err)
 	}
 
-	if movie == (entities.Movie{}) {
+	if movie == nil {
 		return common.NotFoundError(c, id)
 	}
 
 	res := entities.GetMovieResponse{
-		Movie: movie,
+		Movie: *movie,
 	}
 	return c.JSON(http.StatusOK, res)
 }
