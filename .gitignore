@@ -1,0 +1,8 @@
+/.vscode
+
+# Environment Variables
+# .env
+
+# Csv Files
+movies.csv
+/services/movies.csv
