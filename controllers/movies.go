@@ -10,18 +10,18 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type movieService interface {
+type MovieService interface {
 	FindMovie(string) (*entities.Movie, error)
 	FindMovies(string, int, int) ([]entities.Movie, error)
 }
 
 // MovieController represents the controller the movie router uses
 type MovieController struct {
-	service movieService
+	service MovieService
 }
 
-// NewMovieController - receives a `movieService` and instantiates a Movie Controller
-func NewMovieController(srv movieService) MovieController {
+// NewMovieController - receives a `MovieService` and instantiates a Movie Controller
+func NewMovieController(srv MovieService) MovieController {
 	return MovieController{srv}
 }
 
@@ -50,13 +50,14 @@ func (mv MovieController) GetMovie(c echo.Context) error {
 
 // GetMovies - Returns all the movies saved in the csv file
 func (mv MovieController) GetMovies(c echo.Context) error {
-	typeParam := c.QueryParam("type")
-	if typeParam == "" || (typeParam != "odd" && typeParam != "even") {
-		return common.BadRequestError(c, "[type] param must be a value of \"odd\" or \"even\"")
+	filter := c.QueryParam("type")
+	if filter != "odd" && filter != "even" && filter != "" {
+		return common.BadRequestError(c, "[type] param must be empty or one of ['odd', 'even']")
 	}
 
-	items, err := strconv.Atoi(c.QueryParam("items"))
-	if err != nil {
+	itemsParam := c.QueryParam("items")
+	items, err := strconv.Atoi(itemsParam)
+	if err != nil && itemsParam != "" {
 		return common.BadRequestError(c, "[items] param must be an integer")
 	}
 
@@ -65,11 +66,11 @@ func (mv MovieController) GetMovies(c echo.Context) error {
 		return common.BadRequestError(c, "[items_per_workers] param must be an integer")
 	}
 
-	if items < itemsPerWorker {
+	if items > 0 && items < itemsPerWorker {
 		return common.BadRequestError(c, "[items] param must be bigger than [items_per_worker] param")
 	}
 
-	movies, err := mv.service.FindMovies(typeParam, items, itemsPerWorker)
+	movies, err := mv.service.FindMovies(filter, items, itemsPerWorker)
 	if err != nil {
 		return common.InternalServerError(c, err)
 	}

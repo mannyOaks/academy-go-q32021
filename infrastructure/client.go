@@ -3,12 +3,14 @@ package infrastructure
 import (
 	"encoding/json"
 	"errors"
+	"os"
 
 	"github.com/mannyOaks/academy-go-q32021/entities"
 
 	"github.com/go-resty/resty/v2"
 )
 
+// MovieRepo represents the repository the MovieService will be using
 type MovieRepo struct{}
 
 func NewMovieRepo() MovieRepo {
@@ -16,10 +18,9 @@ func NewMovieRepo() MovieRepo {
 }
 
 const baseUrl = "https://api.themoviedb.org/3"
-const omdbAuthToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhMGJkYWRhMmM5NTFhOTBiNmQxNjc4NjgyMTQ3NTRhMSIsInN1YiI6IjYxNWI5OTZjYzhhMmQ0MDAyYWMxMGM3YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.u9kwuL1lNbkvWKUhPqP6vVssioOMiv7a94Wa3cmOm4E"
 
 func newClient() *resty.Client {
-	return resty.New().SetAuthToken(omdbAuthToken)
+	return resty.New().SetAuthToken(os.Getenv("TMDB_API_TOKEN"))
 }
 
 func (mr MovieRepo) GetMovie(id string) (entities.Movie, error) {

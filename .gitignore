@@ -1,7 +1,7 @@
 /.vscode
 
 # Environment Variables
-.env
+# .env
 
 # Csv Files
 movies.csv

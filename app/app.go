@@ -25,7 +25,8 @@ func RunApp() {
 
 func handleMovies(e *echo.Echo) {
 	movieRepo := infrastructure.NewMovieRepo()
-	moviesService := services.NewMovieService(movieRepo)
+	workerPool := infrastructure.NewMovieWorkerPool()
+	moviesService := services.NewMovieService(movieRepo, workerPool)
 	moviesController := controllers.NewMovieController(moviesService)
 
 	e.GET("/movies", moviesController.GetMovies)

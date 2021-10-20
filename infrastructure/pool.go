@@ -1,10 +1,9 @@
-package services
+package infrastructure
 
 import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"math"
 	"os"
 	"strconv"
 	"sync"
@@ -12,18 +11,23 @@ import (
 	"github.com/mannyOaks/academy-go-q32021/entities"
 )
 
-func (ms MovieService) FindMovies(filter string, items int, itemsPerWorker int) ([]entities.Movie, error) {
-	file, err := os.Open(os.Getenv("CSV_PATH"))
+type MovieWorkerPool struct {
+}
+
+func NewMovieWorkerPool() MovieWorkerPool {
+	return MovieWorkerPool{}
+}
+
+// GetMovies - returns an array of movies read from a csv file concurrently and an error
+func (wp MovieWorkerPool) GetMovies(filter string, workerSize, items, maxJobs int) ([]entities.Movie, error) {
+	f, err := os.Open(os.Getenv("CSV_PATH"))
 	if err != nil {
 		return nil, err
 	}
-
-	file.Seek(0, 0)
-
-	numWorkers := int(math.Ceil(float64(items) / float64(itemsPerWorker)))
+	f.Seek(0, 0)
 
 	var wg sync.WaitGroup
-	wg.Add(numWorkers)
+	wg.Add(workerSize)
 
 	rowsChan := make(chan []string)
 	resultsChan := make(chan *entities.Movie)
@@ -49,23 +53,23 @@ func (ms MovieService) FindMovies(filter string, items int, itemsPerWorker int) 
 				finishedJobs++
 			}
 
-			if finishedJobs > itemsPerWorker {
+			if finishedJobs > maxJobs {
 				break
 			}
 		}
 		fmt.Printf("Worker %d finished a job\n", id)
-
 	}
 
-	for w := 0; w < numWorkers; w++ {
+	for w := 0; w < workerSize; w++ {
 		go func(id int) {
 			taskFunc(id)
 		}(w)
 	}
 
-	csvFile := csv.NewReader(file)
+	csvFile := csv.NewReader(f)
 	go func() {
-		for {
+		for i := 0; i < items; i++ {
+			fmt.Println(items, i)
 			row, err := csvFile.Read()
 			if err == io.EOF {
 				break
@@ -78,22 +82,19 @@ func (ms MovieService) FindMovies(filter string, items int, itemsPerWorker int) 
 		close(rowsChan)
 	}()
 
+	// wait for all goroutines to finish and close the results channel
 	go func() {
 		wg.Wait()
 		close(resultsChan)
 	}()
 
-	// var movies []entities.Movie
+	// append all the elements from the results channel to an array
 	movies := make([]entities.Movie, 0)
 	for mov := range resultsChan {
 		if mov == nil {
 			return nil, fmt.Errorf("error parsing %v", mov)
 		}
 		movies = append(movies, *mov)
-	}
-
-	if len(movies) > items {
-		movies = movies[:items]
 	}
 
 	return movies, nil

@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strconv"
 	"testing"
 
+	"github.com/mannyOaks/academy-go-q32021/controllers/mocks"
 	"github.com/mannyOaks/academy-go-q32021/entities"
 
 	"github.com/labstack/echo/v4"
@@ -28,7 +31,7 @@ var (
 	}
 )
 
-func TestMovieController_Controller(t *testing.T) {
+func TestMovieController_GetMovie(t *testing.T) {
 	testCases := []struct {
 		name     string
 		response string
@@ -73,10 +76,9 @@ func TestMovieController_Controller(t *testing.T) {
 	}
 
 	e := echo.New()
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			mock := mockMovieService{}
+			mock := mocks.MovieService{}
 			mock.On("FindMovie", tc.id).Return(tc.movie, tc.err)
 
 			req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -98,4 +100,45 @@ func TestMovieController_Controller(t *testing.T) {
 
 	}
 
+}
+
+func TestMovieController_GetMovies(t *testing.T) {
+	testCases := []struct {
+		name           string
+		filter         string
+		items          int
+		itemsPerWorker int
+		err            error
+		movies         []entities.Movie
+		path           string
+		response       string
+	}{}
+
+	e := echo.New()
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			mock := mocks.MovieService{}
+			mock.On("FindMovies", tc.filter, tc.items, tc.itemsPerWorker).Return(tc.movies, tc.err)
+
+			req := httptest.NewRequest(http.MethodGet, "/", nil)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+
+			q := make(url.Values)
+			q.Set("type", tc.filter)
+			q.Set("items", strconv.Itoa(tc.items))
+			q.Set("items_per_worker", strconv.Itoa(tc.itemsPerWorker))
+
+			c.SetPath(tc.path + "/?" + q.Encode())
+			h := NewMovieController(&mock)
+
+			response := h.GetMovies(c)
+
+			if tc.err == nil {
+				assert.NoError(t, response)
+			}
+
+			assert.EqualValues(t, tc.response, response)
+		})
+	}
 }

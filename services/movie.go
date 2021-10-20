@@ -2,24 +2,30 @@ package services
 
 import (
 	"encoding/csv"
+	"math"
 	"os"
 	"strconv"
 
 	"github.com/mannyOaks/academy-go-q32021/entities"
 )
 
-type movieRepository interface {
+type MovieRepository interface {
 	GetMovie(id string) (entities.Movie, error)
+}
+
+type WorkerPool interface {
+	GetMovies(string, int, int, int) ([]entities.Movie, error)
 }
 
 // MovieService represents the service that will be used by a controller
 type MovieService struct {
-	repo movieRepository
+	repo MovieRepository
+	pool WorkerPool
 }
 
 // NewMovieService - receives a movieRepository and instantiates a movie service
-func NewMovieService(repo movieRepository) MovieService {
-	return MovieService{repo}
+func NewMovieService(repo MovieRepository, pool WorkerPool) MovieService {
+	return MovieService{repo, pool}
 }
 
 // FindMovie - Returns and saves movie from api with the specified id
@@ -33,6 +39,25 @@ func (ms MovieService) FindMovie(id string) (*entities.Movie, error) {
 		return nil, err
 	}
 	return &movie, nil
+}
+
+// FindMovies - returns an array of movies read from a csv file and an error
+func (ms MovieService) FindMovies(filter string, items int, itemsPerWorker int) ([]entities.Movie, error) {
+	numWorkers := ms.GetWorkers(items, itemsPerWorker)
+	movies, err := ms.pool.GetMovies(filter, numWorkers, items, itemsPerWorker)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(movies) > items {
+		movies = movies[:items]
+	}
+	return movies, nil
+}
+
+// GetWorkers- returns total of workers the pool should have
+func (ms MovieService) GetWorkers(items, itemsPerWorker int) int {
+	return int(math.Ceil(float64(items) / float64(itemsPerWorker)))
 }
 
 func saveToCsv(mov entities.Movie) error {
